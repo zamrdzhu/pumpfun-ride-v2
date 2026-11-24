@@ -157,8 +157,10 @@ await runBot({
       const peakGain = info.peakPrice / info.entryPrice - 1;
       const latest = latestTsByMint.get(mint) ?? info.entryTs;
       const heldSeconds = latest - info.entryTs;
+      // Compare in integer percent so the ratio constant stays exact.
+      const stallPercent = BigInt(Math.round(STALL_RESERVE_RATIO * 100));
       const reservesFlat =
-        curve.real_quote_reserves * 100n <= info.entryRealQuoteReserves * 105n;
+        curve.real_quote_reserves * 100n <= info.entryRealQuoteReserves * stallPercent;
 
       const sellAll =
         gain <= STOP_LOSS_GAIN ||
